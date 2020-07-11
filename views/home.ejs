@@ -1,0 +1,28 @@
+<%- include('partials/header'); -%>
+<h1>Employee List   </h1>
+<h3><a href="/add">Add Employee</a></h3>
+
+
+
+
+<table class="table table-inverse">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>position</th>
+      </tr>
+    </thead>
+  
+    <tbody>
+      <% for(var i=0; i < employee.length; i++) { %>
+      <tr>
+        <td ><a href="/show/<%= employee[i]._id%>"><%= employee[i].firstname +" "+ employee[i].lastname %> </a></td>
+        <td><%= employee[i].email %></td>
+        <td><%= employee[i].position %></td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+
+<%- include('partials/footer'); -%>

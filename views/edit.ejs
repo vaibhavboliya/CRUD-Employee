@@ -1,0 +1,35 @@
+<%- include('partials/header'); %>
+    <div class="container">
+      <h3><a href="/home">Employee List</a></h3>
+      <h1>Edit Employee</h1>
+      <form action="/update/<%= employee._id%>" method="post">
+        <table>
+          <tbody>
+            <tr>
+              <td>First Name</td>
+              <td><input type="text" name="firstname" value="<%= employee.firstname %>" /></td>
+            </tr>
+            <tr>
+              <td>Last Name</td>
+              <td><input type="text" name="lastname" value="<%= employee.lastname %>" /></td>
+            </tr>
+            <tr>
+              <td>Email</td>
+              <td><textarea name="email"><%= employee.email %></textarea></td>
+            </tr>
+            <tr>
+              <td>Position</td>
+              <td><input type="text" name="position" value="<%= employee.position %>" /></td>
+            </tr>
+            <tr>
+              <td>City</td>
+              <td><input type="text" name="city" value="<%= employee.city %>" /></td>
+            </tr>
+            <tr>
+              <td colspan="2"><button type="submit">Update</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+    </div>
+    <%- include('partials/footer'); %>

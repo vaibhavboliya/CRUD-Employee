@@ -1,0 +1,26 @@
+body{
+    background-color: wheat;
+}
+h3{
+    padding: 20px;
+    border-bottom: 2px solid black; 
+    
+}
+input{
+    vertical-align: bottom;
+    display: flex;
+    margin: 20px;
+    margin-left: 10em;
+}
+.container{
+    align-content: center;
+    margin-top: 50px;
+    border: 2px solid gainsboro;
+    padding: 0px;
+    background-color: aliceblue;
+
+}
+button{
+    margin-left: 10em;
+
+}
