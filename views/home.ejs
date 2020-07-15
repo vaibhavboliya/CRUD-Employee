@@ -1,11 +1,12 @@
 <%- include('partials/header'); -%>
-<h1>Employee List   </h1>
-<h3><a href="/add">Add Employee</a></h3>
+<div class="container">
+  <div class="jumbotron">
+    <h1 class="display-4">Employee List</h1>
+    <hr>
+    <a class="btn btn-primary btn-lg" href="/add" role="button">Add Employee</a>
 
-
-
-
-<table class="table table-inverse">
+  </div>
+  <table class="table table-inverse">
     <thead>
       <tr>
         <th>Name</th>
@@ -17,12 +18,19 @@
     <tbody>
       <% for(var i=0; i < employee.length; i++) { %>
       <tr>
-        <td ><a href="/show/<%= employee[i]._id%>"><%= employee[i].firstname +" "+ employee[i].lastname %> </a></td>
+        <td ><a href="/show/<%= employee[i]._id%>"><%= employee[i].fullname %> </a></td>
         <td><%= employee[i].email %></td>
         <td><%= employee[i].position %></td>
       </tr>
       <% } %>
     </tbody>
   </table>
+</div>
+<!-- <h3><a href="/add">Add Employee</a></h3> -->
+
+
+
+
+
 
 <%- include('partials/footer'); -%>

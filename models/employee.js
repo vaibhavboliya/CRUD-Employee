@@ -1,11 +1,11 @@
 var mongoose = require('mongoose')
 
 var employeeSchema = new mongoose.Schema({
-    firstname:{
+    fullname:{
         type: String,
         required:true
     },
-    lastname:{
+    username:{
         type: String,
         required: true
     },
@@ -20,7 +20,13 @@ var employeeSchema = new mongoose.Schema({
     city:{
         type: String,
         required: true
-    }
+    },
+    comments: [
+        {
+           type: mongoose.Schema.Types.ObjectId,
+           ref: "Comment"
+        }
+     ]
 
 })
 module.exports = mongoose.model('employee',employeeSchema)

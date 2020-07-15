@@ -1,89 +1,75 @@
-var express = require('express');
-var app = express();
-var bodyparser = require('body-parser')
-var mongoose = require('mongoose')
-var employeedata = require('./models/employee');
+const express        = require('express'),
+      methodOverride = require("method-override"),
+      bodyparser     = require('body-parser'),
+      mongoose       = require('mongoose'),
+      employeedata   = require('./models/employee'),
+      LocalStrategy  = require("passport-local");
+       passport = require('passport'),
+      Comment        = require("./models/comment"),
+      session        = require("express-session"),
+      User           = require("./models/user"),
+      seedb          = require("./seed"),
+      passport       = require("passport");
 
-var url = 'mongodb://localhost/EmployeeDB'
+
+const app = express();
+
+//=======================Mongoose connection=================================
+
+mongoose.Promise = global.Promise;
+const url = 'mongodb://localhost/EmployeeDB'
 mongoose.connect(url, { useNewUrlParser: true })
-var con = mongoose.connection
-con.on('open', () => {
-    console.log('connected');
-})
+    .then(() => console.log(`Database connected`))
+    .catch(err => console.log(`Database connection error: ${err.message}`));
 
 
 
 
+//=======================requirements=================================
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(express.json())
+// app.use((req,res,next)=>{
+//     res.locals.currentUser = req.user;
+//     console.log(req.user)
+//     next()
+// })
+
+//=======================passport=================================
+app.use(require("express-session")({
+    secret: "always be the best",
+    resave: false,
+    saveUninitialized:false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 
-
-
+// seedb()
+//=======================Employee showlist=================================
 // list of all the employees
 app.get('/', async (req, res) => {
     try {
         const employees = await employeedata.find()
-        res.render('home', { employee: employees });
+        res.render('home', { employee: employees,currentUser:req.user });
     } catch (err) {
         res.send('Error ' + err)
     }
 
-});
-// to show the employee by id
-app.get('/show/:id', async (req, res) => {
-    try {
-        const emp = await employeedata.findById(req.params.id)
-        res.render('show', { employee: emp })
-    } catch (err) {
-        res.send('Error ' + err)
-    }
-});
-// for editing the employee info
-app.get('/edit/:id',(req,res) =>{
-    employeedata.findOne({_id: req.params.id}).exec(function (err, employee) {
-        if (err) {
-          console.log("Error:", err);
-        }
-        else {
-          res.render("edit", {employee: employee});
-        }
-      });
-})
-// to update the new data in database
-app.post('/update/:id', async (req, res) => {
-    employeedata.findByIdAndUpdate(req.params.id, { $set: { firstname: req.body.firstname,lastname: req.body.lastname, email: req.body.email, position: req.body.position, city: req.body.city } }, { new: true },  (err, employee) => {
-        if (err) {
-            console.log(err);
-            res.render("edit", { employee: req.body });
-        }
-        res.redirect('/');
-    });
-
-})
-// to delete the employee database
-app.post('/delete/:id',function(req, res) {
-    employeedata.remove({_id: req.params.id}, (err) => {
-      if(err) {
-        console.log(err);
-      }
-      else {
-        console.log("Employee deleted!");
-        res.redirect("/");
-      }
-    });
 });
 // for adding new employ
-app.get('/add', function (req, res) {
+app.get('/add',isLoggedIn,  (req, res)=> {
     res.render('create');
 });
 //for adding the employ data in database
-app.post('/addemployee', async (req, res) => {
+app.post('/addemployee',isLoggedIn, async (req, res) => {
     const emp = new employeedata({
-        firstname: req.body.firstName,
-        lastname: req.body.lastName,
+        fullname: req.body.fullName,
+        username: req.body.usernameName,
         position: req.body.position,
         email: req.body.email,
         city: req.body.city
@@ -95,7 +81,111 @@ app.post('/addemployee', async (req, res) => {
         res.send(err)
     }
 });
+//=======================employee info=================================
+// to show the employee by id
+app.get('/show/:id', async (req, res) => {
+    employeedata.findById(req.params.id).populate("comments").exec(function(err, found){
+        if(err || !found){
+            console.log(err);
+            return res.redirect('/');
+        }
+        console.log(found)
+        //render show template with that campground
+        res.render("show", {employee: found ,currentUser:req.user});
+    });
+});
 
-app.listen(3000, function () {
+
+
+
+
+
+// for editing the employee info
+app.get('/edit/:id',(req,res) =>{
+    employeedata.findOne({_id: req.params.id}).exec( (err, employee)=> {
+        if (err) {
+          console.log("Error:", err);
+        }
+        else {
+          res.render("edit", {employee: employee , currentUser:req.user });
+        }
+      });
+})
+// to update the new data in database
+app.post('/update/:id', async (req, res) => {
+    employeedata.findByIdAndUpdate(req.params.id, { $set: { fullname: req.body.fullname,username: req.body.username, email: req.body.email, position: req.body.position, city: req.body.city } }, { new: true },  (err, employee) => {
+        if (err) {
+            console.log(err);
+            res.render("edit", { employee: req.body });
+        }
+        res.redirect('/');
+    });
+
+})
+// to delete the employee database
+app.post('/delete/:id',(req, res)=> {
+    employeedata.remove({_id: req.params.id}, (err) => {
+      if(err) {
+        console.log(err);
+      }
+      else {
+        console.log("Employee deleted!");
+        res.redirect("/");
+      }
+    });
+});
+
+//=======================login/register=================================
+app.get('/login',(req,res)=>{
+    res.render('login',{currentUser:req.user})
+});
+app.post("/login",passport.authenticate("local",{
+    successRedirect: "/",
+    failureRedirect: "/login"
+}),(req,res)=>{
+    res.redirect("/");
+})
+
+app.get("/logout",(req,res)=>{
+    req.logout(),
+    res.render("/")
+});
+
+app.get("/register", function(req, res){
+    res.render("register", {page: 'register', employee: req.body }); 
+ });
+
+app.post('/register',(req,res)=>{
+        newuser = new User({username:req.body.username});
+        User.register(newuser,req.body.password,(err,user)=>{
+            if(err){
+                console.log(err);
+                return res.render("register")
+            }
+            passport.authenticate("local")(req,res,()=>{
+                res.redirect("/");
+            })
+
+            });
+})
+
+//=======================middleware=================================
+ function isLoggedIn(req, res, next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+    res.redirect('/login');
+}
+
+
+
+
+
+
+
+
+
+//=======================server starter code=================================
+app.listen(3000, ()=> {
     console.log("Server Started at port 3000 ")
 })

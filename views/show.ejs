@@ -1,34 +1,39 @@
 <%- include('partials/header'); %>
     <div class="container">
       <h3><a href="/">Employee List</a></h3>
-      <h1>Employee Detail</h1>
-      <table>
-        <tbody>
-          <tr>
-            <td>Name</td>
-            <td>:</td>
-            <td><%= employee.firstname +" "+ employee.lastname %></td>
-          </tr>
-          <tr>
-            <td>Email</td>
-            <td>:</td>
-            <td><%= employee.email %></td>
-          </tr>
-          <tr>
-            <td>Position</td>
-            <td>:</td>
-            <td><%= employee.position %></td>
-          </tr>
-          <tr>
-            <td>City</td>
-            <td>:</td>
-            <td><%= employee.city %></td>
-          </tr>
-        </tbody>
-      </table>
-      <h3><a href="/edit/<%= employee._id%>">EDIT</a></h3>
-      <form action="/delete/<%= employee._id%>" method="post">
-        <button type="submit">DELETE</button>
-      </form>
+
+
+    <div class="card">
+      <div class="card-header"><h3>Employee Details</h3></div>
+      <div class="class-body">
+        <h5 class="card-title" > <strong>Full Name</strong>   - <%= employee.fullname %></h5>
+        <h5 class="card-title" > <strong>Full Name</strong>   - <%= employee.username %></h5>
+        <h5 class="card-title" > <strong> Email</strong>   -   <%= employee.email %></h5>
+        <h5 class="card-title"> <strong>Position</strong> - <%= employee.position %></h5>
+        <h5 class="card-title"><strong>City</strong>   -  <%= employee.city %></h5>
+        <a href="/edit/<%= employee._id%>" class= 'btn btn-primary'>EDIT</a>
+        <form  class="form-delete" action="/delete/<%= employee._id%>" method="post">
+        <button type="submit" class="btn btn-danger ">DELETE</button>
+        </form>
+        <hr>
+
+      </div>
+
+      <div class="well">
+        <div class="text-left">
+          <h1>comments</h1>
+        </div>
+        <hr>
+        <% employee.comments.forEach((comment)=>{ %>
+        <div class="row">
+          <div class="col-md-12">
+            <strong><%= comment.author %></strong>
+            <div>
+             <%= comment.text %> 
+             <% })%>
+            </div>
+          </div>
+        </div>
     </div>
+  </div>
 <%- include('partials/footer'); %>

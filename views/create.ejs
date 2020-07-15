@@ -1,15 +1,37 @@
 <%- include('partials/header'); -%>
+<div class="jumbotron">
+    <div class="container">
+        <h4 class="display-4">Add Employee</h4>
+
+    </div>
+</div>
 <div class="container">
-    <h1>
-        Add Employee
-      </h1>
-      <form class="form-group" action="/addemployee" method="POST">
-          <input type="text" name = "firstName" placeholder="First Name" required>
-          <input type="text" name = "lastName" placeholder="Last Name" required>
-          <input type="text" name = "position" placeholder="Position" required>
-          <input type="email" name = "email" placeholder="Email" required>
-          <input type="text" name = "city" placeholder="City" required>
-          <button type="submit" class="btn btn-primary">Submit</button>
+    
+    
+      <form  action="/addemployee" method="POST">
+        <div class="form-group row form-control form-control-lg">
+            <input type="text" name = "fullName" placeholder="Full Name" required>
+
+        </div>
+        <div class="form-group  row form-control form-control-lg">
+            <input type="text" name = "username" placeholder="username" required>
+
+        </div>
+        <div class="form-group  row form-control form-control-lg">
+            <input type="text" name = "position" placeholder="Position" required>
+
+        </div>
+        <div class="form-group row  form-control form-control-lg">
+            <input type="email" name = "email" placeholder="Email" required>
+            
+
+        </div>
+        <div class="form-group row  form-control form-control-lg">
+            <input type="text" name = "city" placeholder="City" required>
+            
+
+        </div>
+          <button type="submit" class="btn btn-primary btn-lg">Submit</button>
       </form>
 </div>
 <%- include('partials/footer'); -%>
